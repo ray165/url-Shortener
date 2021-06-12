@@ -6,7 +6,9 @@ export default function  App() {
   // AJAX request to server side on button click. 
   const send = (e) => {
     e.preventDefault()
-    console.log(link.current.value)
+    console.log(link.current.value) // working
+
+    fetch()
   }
 
 
