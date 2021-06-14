@@ -11,6 +11,10 @@ const myModels = require("./models/schema.js");
 const path = require("path");
 const { createHash } = require("crypto");
 
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(bodyParser.json());
+
 // mongoose.connect comes first
 async function connectToDB() {
   try {
@@ -39,7 +43,7 @@ function randomNumber() {
     var numb = 0;
     var run = true
     while (run) {
-        numb = Math.floor(Math.random() * 122) + 65;
+        numb = Math.floor(Math.random() * 55) + 65;
         if (numb > 90 && numb < 97) {
             continue;
         } else {
@@ -51,6 +55,8 @@ function randomNumber() {
 
 
 app.post("/new-url", async function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    console.log("body", req.body)
     console.log("Requested URL", req.body.url);
 
     // ASCII 97-122 lowercase
@@ -61,18 +67,20 @@ app.post("/new-url", async function (req, res) {
     const limit122 = 122
     const limit65 = 65
     const limit90 = 90
-    var newURL 
+
     function randChars() {
         var myArray = [];
         for (let index = 0; index < 4; index++) {
             myArray.push(randomNumber());
+            console.log(myArray)
         }
-
-        newURL = String.fromCharCode([...myArray]);
+        console.log(String.fromCharCode(...myArray))
+        return String.fromCharCode(...myArray);
     }
 
-
-
+    var newURL = randChars()
+    console.log("new url: ", newURL)
+    res.send({ status: "success", msg: `post created ${newURL}` });
 });
 
 app.get("/:hash", function (req, res) {
