@@ -5,15 +5,22 @@ const app = express();
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const credentials = fs.readFileSync("./cert.pem");
-const url = "mongodb+srv://cluster0.obfdv.mongodb.net/projectsDB?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority"
+const url =
+  "mongodb+srv://cluster0.obfdv.mongodb.net/projectsDB?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority";
 // IMPORT SCHEMAS
 const myModels = require("./models/schema.js");
 const path = require("path");
 const { createHash } = require("crypto");
 
-app.use(bodyParser.urlencoded({extended: true}));
+// Fix for deprecation warning 'collection.ensureIndex'
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
 
-app.use(bodyParser.json());
+// bodyParser.urlencoded is deprecated as its included in express
+// Instead uses 'express.urlencoded and .json'
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // mongoose.connect comes first
 async function connectToDB() {
@@ -38,61 +45,92 @@ db.once("open", function () {
   console.log("mongoose running");
 });
 
-
 function randomNumber() {
-    var numb = 0;
-    var run = true
-    while (run) {
-        numb = Math.floor(Math.random() * 55) + 65;
-        if (numb > 90 && numb < 97) {
-            continue;
-        } else {
-            run = false;
-            return numb;
-        }
+  var numb = 0;
+  var run = true;
+  while (run) {
+    numb = Math.floor(Math.random() * 55) + 65;
+    if (numb > 90 && numb < 97) {
+      continue;
+    } else {
+      run = false;
+      return numb;
     }
+  }
 }
 
-
 app.post("/new-url", async function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    console.log("body", req.body)
-    console.log("Requested URL", req.body.url);
+  res.setHeader("Content-Type", "application/json");
+  console.log("body", req.body);
+  console.log("Requested URL", req.body.url);
 
-    // ASCII 97-122 lowercase
-    // ASCII 65-90 uppercase 
-    // 50 possible characters, assume we use 4 digits 
-    // 50^4
-    const limit97 = 97
-    const limit122 = 122
-    const limit65 = 65
-    const limit90 = 90
+  // ASCII 97-122 lowercase
+  // ASCII 65-90 uppercase
+  // 50 possible characters, assume we use 4 digits
+  // 50^4 permutations
+  const limit97 = 97;
+  const limit122 = 122;
+  const limit65 = 65;
+  const limit90 = 90;
 
-    function randChars() {
-        var myArray = [];
-        for (let index = 0; index < 4; index++) {
-            myArray.push(randomNumber());
-            console.log(myArray)
-        }
-        console.log(String.fromCharCode(...myArray))
-        return String.fromCharCode(...myArray);
+  function randChars() {
+    var myArray = [];
+    for (let index = 0; index < 4; index++) {
+      myArray.push(randomNumber());
+      console.log(myArray);
     }
+    return String.fromCharCode(...myArray);
+  }
 
-    var newURL = randChars()
-    console.log("new url: ", newURL)
-    res.send({ status: "success", msg: `post created ${newURL}` });
+  var newURL = randChars();
+  var newData = new myModels.URL({
+    originalURL: req.body.url,
+    codeURL: newURL,
+  })
+
+  newData.save()
+    .then(res.send({ status: "success", msg: `post created ${newURL}`, code: newURL }))
+    .catch((err) => res.send({ status: "error", msg: `Unable to generate data ${err}`}))
+
+  console.log("new url: ", newURL);
+  // res.send({ status: "success", msg: `post created ${newURL}` });
 });
 
-app.get("/:hash", function (req, res) {
-  console.log("Call to server for user's name successful");
+app.get("/u/:code", function (req, res) {
+  // res.setHeader("Content-Type", "application/json");
+
+  console.log("Params: ", req.params.code);
   async function getData() {
+    // try {
+    //   let response = await db
+    //     .collection("URL")
+    //     .findOne({ codeURL: req.params.code })
+    //     .catch( (error) =>
+    //       res.send({status: "error", msg: error})
+    //     );
+    //   console.log("Returned document: " + response);
+    //   res.send(response); // send response here should be a then.
+    // } catch (error) {
+    //   console.error(error);
+    //   res.send({ status: "error", msg: `unable to find on mongodb` });
+    // }
+
     let response = await db
-      .collection("users")
-      .findOne({ hash: req.params.hash });
+      .collection("URL")
+      .findOne({ codeURL: req.params.code })
+      .then(res => console.log("Res from mongo:", res)) // literally null since it doesnt exist yet. Check for if null then redirect to 404
+      .catch((error) => console.error(error));
     console.log("Returned document: " + response);
-    res.send(response);
+    // res.send(response); // send response here should be a then.
+    res.send({ status: "okay", msg: `hey` });
   }
-  getData();
+
+  try {
+    getData();
+  } catch(error) {
+    console.err(error)
+  }
+
 });
 
 app.listen(PORT, () => {
