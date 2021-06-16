@@ -88,28 +88,35 @@ app.post("/new-url", async function (req, res) {
     codeURL: "bDZM", //newURL,
   });
 
-  myModels.URL.create(newData)
-  .then((res) => {
-    if (res.ok) {
-      console.log(res);
-      return res.send({
-        status: "success",
-        msg: `post created ${newURL}`,
-        code: newURL,
+  function createDoc() {
+    myModels.URL.create(newData)
+      .then((response) => {
+        if (response.creationDate !== null) {
+          // create() returns a promsie with the mongodb data if successful. Success if creationDate is not null.
+          // console.log("res.ok line", response);
+          return res.send({
+            status: "success",
+            msg: `post created ${newURL}`,
+            code: newURL,
+          });
+        } else {
+          throw new Error(response); // mongoDB error
+        }
+      })
+      .catch((e) => {
+        console.error("Error:", e, "error code", e.code);
+        if (e.code === 11000) {
+          // 11000 is duplicate URL code...
+          newData.codeURL = randChars();
+          createDoc(); // run again with a new code
+        } else {
+          res.send({ status: "error", msg: `Unable to generate data ${e}` });
+        }
       });
-    } else {
-      throw new Error("Something went wrong");
-    }
-  })
-  .catch((e) => {
-    console.error("Error:", e)
-    res.send({ status: "error", msg: `Unable to generate data ${e}`})
-  })
-
-  // .catch((err) => res.send({ status: "error", msg: `Unable to generate data ${err}`}))
+  }
+  createDoc();
 
   console.log("new url: ", newURL);
-  // res.send({ status: "success", msg: `post created ${newURL}` });
 });
 
 app.get("/u/:code", function (req, res) {
