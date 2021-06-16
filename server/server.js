@@ -68,10 +68,6 @@ app.post("/new-url", async function (req, res) {
   // ASCII 65-90 uppercase
   // 50 possible characters, assume we use 4 digits
   // 50^4 permutations
-  const limit97 = 97;
-  const limit122 = 122;
-  const limit65 = 65;
-  const limit90 = 90;
 
   function randChars() {
     var myArray = [];
@@ -85,7 +81,7 @@ app.post("/new-url", async function (req, res) {
   var newURL = randChars();
   var newData = new myModels.URL({
     originalURL: req.body.url,
-    codeURL: "bDZM", //newURL,
+    codeURL: newURL,
   });
 
   function createDoc() {
@@ -108,7 +104,7 @@ app.post("/new-url", async function (req, res) {
         if (e.code === 11000) {
           // 11000 is duplicate URL code...
           newData.codeURL = randChars();
-          createDoc(); // run again with a new code
+          createDoc(); 
         } else {
           res.send({ status: "error", msg: `Unable to generate data ${e}` });
         }
