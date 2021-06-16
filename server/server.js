@@ -85,12 +85,28 @@ app.post("/new-url", async function (req, res) {
   var newURL = randChars();
   var newData = new myModels.URL({
     originalURL: req.body.url,
-    codeURL: newURL,
+    codeURL: "bDZM", //newURL,
+  });
+
+  myModels.URL.create(newData)
+  .then((res) => {
+    if (res.ok) {
+      console.log(res);
+      return res.send({
+        status: "success",
+        msg: `post created ${newURL}`,
+        code: newURL,
+      });
+    } else {
+      throw new Error("Something went wrong");
+    }
+  })
+  .catch((e) => {
+    console.error("Error:", e)
+    res.send({ status: "error", msg: `Unable to generate data ${e}`})
   })
 
-  newData.save()
-    .then(res.send({ status: "success", msg: `post created ${newURL}`, code: newURL }))
-    .catch((err) => res.send({ status: "error", msg: `Unable to generate data ${err}`}))
+  // .catch((err) => res.send({ status: "error", msg: `Unable to generate data ${err}`}))
 
   console.log("new url: ", newURL);
   // res.send({ status: "success", msg: `post created ${newURL}` });
@@ -118,7 +134,7 @@ app.get("/u/:code", function (req, res) {
     let response = await db
       .collection("URL")
       .findOne({ codeURL: req.params.code })
-      .then(res => console.log("Res from mongo:", res)) // literally null since it doesnt exist yet. Check for if null then redirect to 404
+      .then((res) => console.log("Res from mongo:", res)) // literally null since it doesnt exist yet. Check for if null then redirect to 404
       .catch((error) => console.error(error));
     console.log("Returned document: " + response);
     // res.send(response); // send response here should be a then.
@@ -127,10 +143,9 @@ app.get("/u/:code", function (req, res) {
 
   try {
     getData();
-  } catch(error) {
-    console.err(error)
+  } catch (error) {
+    console.err(error);
   }
-
 });
 
 app.listen(PORT, () => {
