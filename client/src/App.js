@@ -11,6 +11,7 @@ import CardList from "./subComp/cardList.js"
 export default function  App() {
   const link = useRef('testLink')
   const [newLink, setNewLink] = useState('')
+  const [log, setLog] = useState([])
   
   // AJAX request to server side on button click. 
   const send = (e) => {
@@ -34,6 +35,12 @@ export default function  App() {
         throw new Error(res)
       } else if (res.status === "success") {
         setNewLink(String(window.location.href + "/u/" + res.code)) 
+        let newData = {
+          originalLink: res.originalURL,
+          newLink: String(window.location.href + "/u/" + res.code)
+        }
+        setLog([newData, ...log])
+        console.log(log)
       }
     })
     .catch((err) => {
@@ -51,7 +58,7 @@ export default function  App() {
         Get Shortened URL
       </Button>
       <Typography >{newLink}</Typography>
-      <CardList/>
+      <CardList data={log}/>
     </>
   );
 }

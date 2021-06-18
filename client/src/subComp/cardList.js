@@ -7,7 +7,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 /**
  *  Code adapted from MUI docs for List items 
  *  @param props contains an array of objects for each link shortened by the current user.
- * 
+ *  @return CardList component
  *  */
 export default function CardList(props) {
 
@@ -19,7 +19,6 @@ export default function CardList(props) {
     //     );
     // }
     const copyClick = (e) => {
-        e.preventDefault
 
         console.log("File copy is clicked", e)
 
@@ -28,7 +27,8 @@ export default function CardList(props) {
     return(
         <>
             <List>
-                {props.map((obj) =>
+                <p>Testing</p>
+                {(props.data).map((obj) => (
                     <ListItem>
                         <ListItemText
                             primary={obj.originalLink}
@@ -40,7 +40,7 @@ export default function CardList(props) {
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
-                )}
+                ))}
             </List>
         </>
     )
