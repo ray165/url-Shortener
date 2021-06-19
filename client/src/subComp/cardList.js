@@ -29,14 +29,14 @@ export default function CardList(props) {
             <List>
                 <p>Testing</p>
                 {(props.data).map((obj) => (
-                    <ListItem>
+                    <ListItem key={obj.id}>
                         <ListItemText
                             primary={obj.originalLink}
                             secondary={obj.newLink}
                         />
-                        <ListItemSecondaryAction>
+                        <ListItemSecondaryAction onClick={() => copyClick(obj.newLink)}>
                             <IconButton edge="end" aria-label="copy">
-                                <FileCopyIcon onClick={() => copyClick(obj.newLink)}/>
+                                <FileCopyIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
