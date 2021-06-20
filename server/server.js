@@ -94,6 +94,7 @@ app.post("/new-url", async function (req, res) {
             status: "success",
             msg: `post created ${newURL}`,
             code: newURL,
+            json: response
           });
         } else {
           throw new Error(response); // mongoDB error
@@ -135,17 +136,31 @@ app.get("/u/:code", function (req, res) {
     // }
 
     let response = await db
-      .collection("URL")
+      .collection("urls")
       .findOne({ codeURL: req.params.code })
-      .then((res) => console.log("Res from mongo:", res)) // literally null since it doesnt exist yet. Check for if null then redirect to 404
-      .catch((error) => console.error(error));
+      .then((data) => {
+        console.log("Res from mongo:", data)
+        if (data.creationDate !== null) {
+          // res.send({
+          //   status: "success",
+          //   content: data,
+          // })
+          res.redirect(data.originalURL) // this is being executed on the original URL! need to fix..
+        } else {
+          throw new Error(data)
+        }
+      }) // literally null since it doesnt exist yet. Check for if null then redirect to 404
+      .catch((error) => {
+        console.error(error)
+        // sebd a response that it didn't work. redirect to 404
+        res.status(404).send({status: error})
+      });
     console.log("Returned document: " + response);
     // res.send(response); // send response here should be a then.
-    res.send({ status: "okay", msg: `hey` });
   }
 
   try {
-    getData();
+    getData()
   } catch (error) {
     console.err(error);
   }
