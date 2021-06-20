@@ -21,13 +21,13 @@ export default function CardList(props) {
     const copyClick = (e) => {
 
         console.log("File copy is clicked", e)
-
+        navigator.clipboard.writeText(String(e))
     }
 
     return(
         <>
             <List>
-                <p>Testing</p>
+                <Typography align="center">Testing</Typography>
                 {(props.data).map((obj) => (
                     <ListItem key={obj.id}>
                         <ListItemText
