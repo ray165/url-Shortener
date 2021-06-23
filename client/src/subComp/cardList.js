@@ -1,47 +1,80 @@
 import React, { useRef, useState } from "react";
-import { Typography, List, ListItem, ListItemAvatar, ListItemIcon, ListItemSecondaryAction, ListItemText, IconButton  } from "@material-ui/core";
+import {
+  Typography,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+  IconButton,
+  Snackbar,
+  Button,
+} from "@material-ui/core";
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-
-
-
+import CloseIcon from '@material-ui/icons/Close';
 /**
- *  Code adapted from MUI docs for List items 
+ *  Code adapted from MUI docs for List items
  *  @param props contains an array of objects for each link shortened by the current user.
  *  @return CardList component
  *  */
 export default function CardList(props) {
+  const [open, setOpen] = React.useState(false);
 
-    // function generate(element) {
-    //     return props.map((obj) => 
-    //         React.cloneElement(element, {
-    //             key: obj,
-    //         })
-    //     );
-    // }
-    const copyClick = (e) => {
-
-        console.log("File copy is clicked", e)
-        navigator.clipboard.writeText(String(e))
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
     }
 
-    return(
-        <>
-            <List>
-                <Typography align="center">Testing</Typography>
-                {(props.data).map((obj) => (
-                    <ListItem key={obj.id}>
-                        <ListItemText
-                            primary={obj.originalLink}
-                            secondary={obj.newLink}
-                        />
-                        <ListItemSecondaryAction onClick={() => copyClick(obj.newLink)}>
-                            <IconButton edge="end" aria-label="copy">
-                                <FileCopyIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                ))}
-            </List>
-        </>
-    )
+    setOpen(false);
+  };
+
+  const copyClick = (e) => {
+    console.log("File copy is clicked", e);
+    navigator.clipboard.writeText(String(e));
+    setOpen(true);
+  };
+
+  return (
+    <>
+      <List>
+        <Typography align="center">Testing</Typography>
+        {props.data.map((obj) => (
+          <ListItem key={obj.id}>
+            <ListItemText primary={obj.originalLink} secondary={obj.newLink} />
+            <ListItemSecondaryAction onClick={() => copyClick(obj.newLink)}>
+              <IconButton edge="end" aria-label="copy">
+                <FileCopyIcon />
+              </IconButton>
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+      </List>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="Copied to clipboard"
+        action={
+          <React.Fragment>
+            <Button color="secondary" size="small" onClick={handleClose}>
+              UNDO
+            </Button>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleClose}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
+    </>
+  );
 }
