@@ -34,10 +34,10 @@ export default function  App() {
       if (res.status === "error") {
         throw new Error(res)
       } else if (res.status === "success") {
-        setNewLink(String(window.location.href + "/u/" + res.code)) 
+        setNewLink(String(window.location.href + "u/" + res.code)) 
         let newData = {
           originalLink: res.json.originalURL,
-          newLink: String(window.location.href + "/u/" + res.code),
+          newLink: String(window.location.href + "u/" + res.code),
           id: res.json._id
         }
         setLog([newData, ...log])
