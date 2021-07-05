@@ -1,6 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import CardList from "./subComp/cardList.js"
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
 
 // function validation(text) {
 //   if (text.length === null || text === '') {
@@ -51,7 +58,7 @@ export default function  App() {
 
 
   return (
-    <>
+    <Router>
       <form noValidate autoComplete="off">
         <TextField id="outlined-basic" label="your url goes here" variant="outlined" inputRef={link}/>
       </form>
@@ -60,6 +67,41 @@ export default function  App() {
       </Button>
       <Typography >{newLink}</Typography>
       <CardList data={log}/>
-    </>
+      <Switch>
+        <Route path="/u/:code" children={<Child />} />
+      </Switch>
+    </Router>
   );
+}
+
+
+function Child() {
+  let { code } = useParams();
+  const [status, setStatus] = useState();
+
+  useEffect(() => {
+    fetch(`/findCode/${code}`)
+    .then((res) => res.json())
+    .then((res) => {
+      if (res.status === "success") {
+        setStatus(res)
+        window.location.replace(res.content.originalURL);
+      }
+    })
+    .catch((err) => {
+      setStatus(err)
+      console.error(err)
+    })
+    return () => {
+      setStatus(null)
+    }
+  }, [status])
+
+
+  return (
+    <>
+      <h1>code: {code}</h1>
+      <h2>message: Redirecting...}</h2>
+    </>
+  )
 }

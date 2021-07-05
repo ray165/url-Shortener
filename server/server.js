@@ -116,7 +116,7 @@ app.post("/new-url", async function (req, res) {
   console.log("new url: ", newURL);
 });
 
-app.get("/u/:code", function (req, res) {
+app.get("/findCode/:code", function (req, res) {
   // res.setHeader("Content-Type", "application/json");
 
   console.log("Params: ", req.params.code);
@@ -141,11 +141,11 @@ app.get("/u/:code", function (req, res) {
       .then((data) => {
         console.log("Res from mongo:", data)
         if (data.creationDate !== null) {
-          // res.send({
-          //   status: "success",
-          //   content: data,
-          // })
-          res.redirect(data.originalURL) // this is being executed on the original URL! need to fix..
+          res.send({
+            status: "success",
+            content: data,
+          })
+          // res.redirect(String(data.originalURL)) // this is being executed on the original URL! need to fix..
         } else {
           throw new Error(data)
         }
