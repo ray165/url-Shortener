@@ -1,0 +1,7 @@
+#listContainer {
+    background-color: aliceblue;
+    border: 3px solid lightgrey;
+    min-height: 10vh;
+    max-width: 60vh;
+    margin: 0 auto;
+}

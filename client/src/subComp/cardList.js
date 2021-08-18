@@ -13,6 +13,8 @@ import {
 } from "@material-ui/core";
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import CloseIcon from '@material-ui/icons/Close';
+import './cardList.css'
+
 /**
  *  Code adapted from MUI docs for List items
  *  @param props contains an array of objects for each link shortened by the current user.
@@ -37,8 +39,8 @@ export default function CardList(props) {
 
   return (
     <>
-      <List>
-        <Typography align="center">Testing</Typography>
+      <List id="listContainer">
+        <Typography variant="h5" color="primary" align="center">Previous Links:</Typography>
         {props.data.map((obj) => (
           <ListItem key={obj.id}>
             <ListItemText primary={obj.originalLink} secondary={obj.newLink} />

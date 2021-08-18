@@ -2,9 +2,25 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#input-url {
+  width: 60vw;
+}
+
+#message {
+  margin-top: 2vh;
+}
+
+#formContainer {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  
+  width: 70vw;
+  margin: 0 auto;
+  margin-bottom: 5vh;
+  margin-top: 3vh;
 }
 
 @media (prefers-reduced-motion: no-preference) {
