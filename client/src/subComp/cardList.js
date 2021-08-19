@@ -1,10 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Typography,
   List,
   ListItem,
-  ListItemAvatar,
-  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   IconButton,
@@ -21,7 +19,7 @@ import './cardList.css'
  *  @return CardList component
  *  */
 export default function CardList(props) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -32,7 +30,7 @@ export default function CardList(props) {
   };
 
   const copyClick = (e) => {
-    console.log("File copy is clicked", e);
+    // console.log("File copy is clicked", e);
     navigator.clipboard.writeText(String(e));
     setOpen(true);
   };

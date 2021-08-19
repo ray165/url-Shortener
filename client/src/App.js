@@ -5,16 +5,10 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   useParams,
 } from "react-router-dom";
 import "./App.css";
 
-// function validation(text) {
-//   if (text.length === null || text === '') {
-//     return Error
-//   }
-// }
 
 export default function App() {
   const link = useRef("testLink");
@@ -24,43 +18,62 @@ export default function App() {
   // AJAX request to server side on button click.
   const send = (e) => {
     e.preventDefault();
-    console.log(link.current.value); // working
-    let dataToSend = {
-      url: link.current.value,
-    };
+    console.log(link.current.value); 
+    let valid = false;
 
-    fetch(`/new-url`, {
-      method: "POST",
-      body: JSON.stringify(dataToSend), // stringify is needed to send!!!
-      headers: {
-        "Content-Type": "application/json", // content type is needed as well!!!
-      },
-    })
-      .then((data) => data.json())
-      .then((res) => {
-        console.log(res);
-        if (res.status === "error") {
-          throw new Error(res);
-        } else if (res.status === "success") {
-          setNewLink(String(window.location.href + "u/" + res.code));
-          let newData = {
-            originalLink: res.json.originalURL,
-            newLink: String(window.location.href + "u/" + res.code),
-            id: res.json._id,
-          };
-          setLog([newData, ...log]);
-          console.log(log);
-        }
+    //Check if its a fully qualified link. Throw error otherwise
+    let string = String(link.current.value);
+    if (!string.includes("http:") && !string.includes("https:")) {
+      // setValid(false);
+      setNewLink("Your link does not contain 'http://' or 'https://' !");
+    } else {
+      // setValid(true);
+      valid = true
+    }
+
+    console.log("Is it valid?", valid)
+    if (valid) {
+      let dataToSend = {
+        url: link.current.value,
+      };
+
+      fetch(`/new-url`, {
+        method: "POST",
+        body: JSON.stringify(dataToSend), // stringify is needed to send!!!
+        headers: {
+          "Content-Type": "application/json", // content type is needed as well!!!
+        },
       })
-      .catch((err) => {
-        setNewLink("Unable to generate a new link");
-      });
+        .then((data) => data.json())
+        .then((res) => {
+          console.log(res);
+          if (res.status === "error") {
+            throw new Error("Unable to generate a new link");
+          } else if (res.status === "success") {
+            console.log(res.code, "code returned...");
+            setNewLink(String(window.location.origin + "/u/" + res.code));
+            let newData = {
+              originalLink: res.json.originalURL,
+              newLink: String(window.location.origin + "/u/" + res.code),
+              id: res.json._id,
+            };
+            setLog([newData, ...log]);
+            console.log(log);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setNewLink(err);
+        });
+    }
   };
 
   return (
     <Router>
       <Paper id="formContainer">
-        <Typography variant="h3" color="primary" fontWeight="fontWeightMedium">Short URL</Typography>
+        <Typography variant="h3" color="primary" fontWeight="fontWeightMedium">
+          Short URL
+        </Typography>
         <form noValidate autoComplete="off" id="input-url">
           <TextField
             id="outlined-basic"
@@ -73,9 +86,16 @@ export default function App() {
         <Button variant="contained" color="primary" onClick={send}>
           Get Shortened URL
         </Button>
-        <Typography variant="caption" fontWeight="fontWeightBold">Links must be fully qualified i.e. including 'https'</Typography>
-        <Typography id="message" varant="subtitle1" color="secondary" fontWeight="fontWeightBold">
-          {newLink} 
+        <Typography variant="caption" fontWeight="fontWeightBold">
+          Links must be fully qualified i.e. including 'https'
+        </Typography>
+        <Typography
+          id="message"
+          varant="subtitle1"
+          color="secondary"
+          fontWeight="fontWeightBold"
+        >
+          {newLink}
         </Typography>
       </Paper>
       <CardList data={log} />
@@ -87,7 +107,7 @@ export default function App() {
 }
 
 /**
- * Function is needed as React controls the window.location property. 
+ * Function is needed as React controls the window.location property.
  * Can't navigate to anthoer site using Node Js when react is in place
  * @returns Opens new fully-qualified link
  */
@@ -111,7 +131,7 @@ function Child() {
     return () => {
       setStatus(null);
     };
-  }, [status]);
+  }, [status, code]);
 
   return (
     <>
