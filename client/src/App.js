@@ -36,6 +36,7 @@ export default function App() {
       let dataToSend = {
         url: link.current.value,
       };
+      console.log(dataToSend)
 
       fetch(`https://url-smallify.herokuapp.com/new-url`, {
         method: "POST",

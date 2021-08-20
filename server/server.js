@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 const fs = require("fs");
 const bodyParser = require("body-parser");
-// const credentials = fs.readFileSync("./cert.pem") || process.env.credentials;
+const credentials = process.env.credentials; //fs.readFileSync("./cert.pem") 
 const url =
   "mongodb+srv://cluster0.obfdv.mongodb.net/projectsDB?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority";
 // IMPORT SCHEMAS
@@ -23,19 +23,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // mongoose.connect comes first
-async function connectToDB() {
-  try {
-    await mongoose.connect(url, {
-      sslKey: credentials,
-      sslCert: credentials,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
-connectToDB();
+// async function connectToDB() {
+//   try {
+//     await mongoose.connect(url, {
+//       sslKey: credentials,
+//       sslCert: credentials,
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//   }
+// }
+// connectToDB();
+
+mongoose.connect(url, {
+  sslKey: credentials,
+  sslCert: credentials,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("Connected to DB"))
+.catch(err => console.error(err));
 
 const db = mongoose.connection;
 // line code 22-25 retrieved from https://www.mongoosejs.com/docs/
@@ -58,6 +67,10 @@ function randomNumber() {
     }
   }
 }
+
+app.get('/', (req, res) => {
+  res.send("Server connected!")
+})
 
 app.post("/new-url", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
