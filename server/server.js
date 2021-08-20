@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const fs = require("fs");
+const cors = require('cors')
 const bodyParser = require("body-parser");
 const credentials = process.env.credentials; //fs.readFileSync("./cert.pem") 
 const url =
@@ -10,7 +11,6 @@ const url =
 // IMPORT SCHEMAS
 const myModels = require("./models/schema.js");
 const path = require("path");
-const { createHash } = require("crypto");
 
 // Fix for deprecation warning 'collection.ensureIndex'
 mongoose.set("useNewUrlParser", true);
@@ -19,6 +19,7 @@ mongoose.set("useCreateIndex", true);
 
 // bodyParser.urlencoded is deprecated as its included in express
 // Instead uses 'express.urlencoded and .json'
+app.use(cors()); // Hopefully to fix post requests coming from netlify to heroku
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
