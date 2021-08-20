@@ -37,7 +37,7 @@ export default function App() {
         url: link.current.value,
       };
 
-      fetch(`/new-url`, {
+      fetch(`https://url-smallify.herokuapp.com/new-url`, {
         method: "POST",
         body: JSON.stringify(dataToSend), // stringify is needed to send!!!
         headers: {
@@ -116,7 +116,7 @@ function Child() {
   const [status, setStatus] = useState();
 
   useEffect(() => {
-    fetch(`/findCode/${code}`)
+    fetch(`https://url-smallify.herokuapp.com/findCode/${code}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.status === "success") {
