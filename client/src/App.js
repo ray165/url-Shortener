@@ -101,7 +101,7 @@ export default function App() {
       </Paper>
       <CardList data={log} />
       <Switch>
-        <Route path="https://urlsim.netlify.app/u/:code" children={<Child />} />
+        <Route path="/u/:code" children={<Child />} />
       </Switch>
     </Router>
   );
