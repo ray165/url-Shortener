@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 const fs = require("fs");
 const bodyParser = require("body-parser");
-const credentials = fs.readFileSync("./cert.pem");
+// const credentials = fs.readFileSync("./cert.pem") || process.env.credentials;
 const url =
   "mongodb+srv://cluster0.obfdv.mongodb.net/projectsDB?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority";
 // IMPORT SCHEMAS
