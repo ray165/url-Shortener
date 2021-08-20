@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import CardList from "./subComp/cardList.js";
 import {
@@ -116,7 +116,8 @@ function Child() {
   let { code } = useParams();
   const [status, setStatus] = useState();
 
-  useEffect(() => {
+  // useLayoutEffect render content first, but before painting it onto the screen, it'll execute the functions. Prevents flicker.
+  useLayoutEffect(() => {
     fetch(`https://url-smallify.herokuapp.com/findCode/${code}`)
       .then((res) => res.json())
       .then((res) => {
