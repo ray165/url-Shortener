@@ -141,7 +141,7 @@ function Child() {
     <>
       <div id="redirectMsg">
         <h4>code: {code}</h4>
-        <h4>message: {status}</h4>
+        {/* <h4>message: {status}</h4> */}
       </div>
     </>
   );
