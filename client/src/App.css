@@ -6,6 +6,11 @@
   width: 60vw;
 }
 
+#redirectMsg {
+  margin: 0 auto;
+  text-align: center;
+}
+
 #message {
   margin-top: 2vh;
 }

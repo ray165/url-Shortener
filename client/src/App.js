@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-
 export default function App() {
   const link = useRef("testLink");
   const [newLink, setNewLink] = useState("");
@@ -18,7 +17,7 @@ export default function App() {
   // AJAX request to server side on button click.
   const send = (e) => {
     e.preventDefault();
-    console.log(link.current.value); 
+    console.log(link.current.value);
     let valid = false;
 
     //Check if its a fully qualified link. Throw error otherwise
@@ -28,15 +27,15 @@ export default function App() {
       setNewLink("Your link does not contain 'http://' or 'https://' !");
     } else {
       // setValid(true);
-      valid = true
+      valid = true;
     }
 
-    console.log("Is it valid?", valid)
+    console.log("Is it valid?", valid);
     if (valid) {
       let dataToSend = {
         url: link.current.value,
       };
-      console.log(dataToSend)
+      console.log(dataToSend);
 
       fetch(`https://url-smallify.herokuapp.com/new-url`, {
         method: "POST",
@@ -87,8 +86,11 @@ export default function App() {
         <Button variant="contained" color="primary" onClick={send}>
           Get Shortened URL
         </Button>
+        <Typography variant="h6" fontWeight="fontWeightBold">
+          Please wait for Heroku to start... app may buffer on first use!
+        </Typography>
         <Typography variant="caption" fontWeight="fontWeightBold">
-          Links must be fully qualified i.e. including 'https'
+          Links must be fully qualified i.e. including 'https' or 'http'
         </Typography>
         <Typography
           id="message"
@@ -137,8 +139,10 @@ function Child() {
 
   return (
     <>
-      <h1>code: {code}</h1>
-      <h2>message: {status}</h2>
+      <div id="redirectMsg">
+        <h4>code: {code}</h4>
+        <h4>message: {status}</h4>
+      </div>
     </>
   );
 }
