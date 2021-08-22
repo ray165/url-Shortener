@@ -1,5 +1,11 @@
 import React, { useRef, useState, useLayoutEffect } from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
+import  {
+  createMuiTheme,
+  responsiveFontSizes,
+  ThemeProvider,
+} from "@material-ui/core/styles";
+// import { createTheme } from '@material-ui';
 import CardList from "./subComp/cardList.js";
 import {
   BrowserRouter as Router,
@@ -8,6 +14,9 @@ import {
   useParams,
 } from "react-router-dom";
 import "./App.css";
+
+let theme = createMuiTheme();
+theme = responsiveFontSizes(theme);
 
 export default function App() {
   const link = useRef("testLink");
@@ -86,20 +95,30 @@ export default function App() {
         <Button variant="contained" color="primary" onClick={send}>
           Get Shortened URL
         </Button>
-        <Typography variant="h6" fontWeight="fontWeightBold">
-          Please wait for Heroku to start... app may buffer on first use!
-        </Typography>
-        <Typography variant="caption" fontWeight="fontWeightBold">
-          Links must be fully qualified i.e. including 'https' or 'http'
-        </Typography>
-        <Typography
-          id="message"
-          varant="subtitle1"
-          color="secondary"
-          fontWeight="fontWeightBold"
-        >
-          {newLink}
-        </Typography>
+        <ThemeProvider theme={theme}>
+          <Typography
+            className="textStyle"
+            variant="h6"
+            fontWeight="fontWeightBold"
+          >
+            Please wait for Heroku to start... app may buffer on first use!
+          </Typography>
+          <Typography
+            className="textStyle"
+            variant="caption"
+            fontWeight="fontWeightBold"
+          >
+            Links must be fully qualified i.e. including 'https' or 'http'
+          </Typography>
+          <Typography
+            id="message"
+            varant="subtitle1"
+            color="secondary"
+            fontWeight="fontWeightBold"
+          >
+            {newLink}
+          </Typography>
+        </ThemeProvider>
       </Paper>
       <CardList data={log} />
       <Switch>
