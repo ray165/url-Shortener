@@ -5,7 +5,6 @@ import  {
   responsiveFontSizes,
   ThemeProvider,
 } from "@material-ui/core/styles";
-// import { createTheme } from '@material-ui';
 import CardList from "./subComp/cardList.js";
 import {
   BrowserRouter as Router,
@@ -13,6 +12,7 @@ import {
   Route,
   useParams,
 } from "react-router-dom";
+import DOMPurify from 'dompurify';
 import "./App.css";
 
 let theme = createMuiTheme();
@@ -26,11 +26,12 @@ export default function App() {
   // AJAX request to server side on button click.
   const send = (e) => {
     e.preventDefault();
-    console.log(link.current.value);
+    let clean = DOMPurify.sanitize(link.current.value);
+    console.log(clean);
     let valid = false;
 
     //Check if its a fully qualified link. Throw error otherwise
-    let string = String(link.current.value);
+    let string = String(clean);
     if (!string.includes("http:") && !string.includes("https:")) {
       // setValid(false);
       setNewLink("Your link does not contain 'http://' or 'https://' !");
@@ -42,7 +43,7 @@ export default function App() {
     console.log("Is it valid?", valid);
     if (valid) {
       let dataToSend = {
-        url: link.current.value,
+        url: clean,
       };
       console.log(dataToSend);
 
