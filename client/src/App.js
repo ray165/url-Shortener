@@ -39,12 +39,12 @@ export default function App() {
       valid = true;
     }
 
-    console.log("Is it valid?", valid);
+    // console.log("Is it valid?", valid);
     if (valid) {
       let dataToSend = {
         url: clean,
       };
-      console.log(dataToSend);
+      // console.log(dataToSend);
 
       fetch(`https://url-smallify.herokuapp.com/new-url`, {
         method: "POST",
@@ -55,11 +55,11 @@ export default function App() {
       })
         .then((data) => data.json())
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           if (res.status === "error") {
             throw new Error("Unable to generate a new link");
           } else if (res.status === "success") {
-            console.log(res.code, "code returned...");
+            // console.log(res.code, "code returned...");
             setNewLink(String(window.location.origin + "/u/" + res.code));
             let newData = {
               originalLink: res.json.originalURL,
