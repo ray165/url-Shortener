@@ -1,9 +1,12 @@
 const PORT = process.env.PORT || 8000; // 3001 for react
 const express = require("express");
 const mongoose = require("mongoose");
+const createDOMPurify = require('dompurify');
+const rateLimit = require("express-rate-limit");
+const { JSDOM } = require('jsdom');
 const app = express();
 const fs = require("fs");
-const cors = require('cors')
+const cors = require('cors');
 const bodyParser = require("body-parser");
 const credentials = process.env.credentials; //fs.readFileSync("./cert.pem") 
 const url =
@@ -11,6 +14,16 @@ const url =
 // IMPORT SCHEMAS
 const myModels = require("./models/schema.js");
 const path = require("path");
+
+/**
+ * Rate Limiter for spam prevention... for all API routes
+ */
+ app.set('trust proxy', 1); // reccomended by docs using reverse proxy w/ heroku
+ const limiter = rateLimit({
+   windowMs: 15 * 60 * 1000, // 15 minutes
+   max: 100 // 100 reqs per IP every 15 mins
+ });
+app.use(limiter)
 
 // Fix for deprecation warning 'collection.ensureIndex'
 mongoose.set("useNewUrlParser", true);
@@ -22,6 +35,13 @@ mongoose.set("useCreateIndex", true);
 app.use(cors()); // Hopefully to fix post requests coming from netlify to heroku
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+
+/**
+ * Init DOMPurify + JSDOM
+ */
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window)
 
 // mongoose.connect comes first
 // async function connectToDB() {
@@ -55,6 +75,10 @@ db.once("open", function () {
   console.log("mongoose running");
 });
 
+/**
+ * Generates a code for mongodb
+ * @returns 4 letter code
+ */
 function randomNumber() {
   var numb = 0;
   var run = true;
@@ -76,7 +100,8 @@ app.get('/', (req, res) => {
 app.post("/new-url", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   console.log("body", req.body);
-  console.log("Requested URL", req.body.url);
+  let clean = DOMPurify.sanitize(req.body.url);
+  console.log("Requested URL", clean);
 
   // ASCII 97-122 lowercase
   // ASCII 65-90 uppercase
@@ -94,7 +119,7 @@ app.post("/new-url", async function (req, res) {
 
   var newURL = randChars();
   var newData = new myModels.URL({
-    originalURL: req.body.url,
+    originalURL: clean,
     codeURL: newURL,
   });
 
@@ -132,8 +157,8 @@ app.post("/new-url", async function (req, res) {
 
 app.get("/findCode/:code", function (req, res) {
   // res.setHeader("Content-Type", "application/json");
-
-  console.log("Params: ", req.params.code);
+  let cleanCode = DOMPurify.sanitize(req.params.code);
+  console.log("Params: ", cleanCode);
   async function getData() {
     // try {
     //   let response = await db
@@ -151,7 +176,7 @@ app.get("/findCode/:code", function (req, res) {
 
     let response = await db
       .collection("urls")
-      .findOne({ codeURL: req.params.code })
+      .findOne({ codeURL: cleanCode })
       .then((data) => {
         console.log("Res from mongo:", data)
         if (data.creationDate !== null) {

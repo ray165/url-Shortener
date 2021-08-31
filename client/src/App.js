@@ -27,7 +27,6 @@ export default function App() {
   const send = (e) => {
     e.preventDefault();
     let clean = DOMPurify.sanitize(link.current.value);
-    console.log(clean);
     let valid = false;
 
     //Check if its a fully qualified link. Throw error otherwise
