@@ -28,12 +28,15 @@ export default function App() {
     e.preventDefault();
     let clean = DOMPurify.sanitize(link.current.value);
     let valid = false;
+    let regexURL =  /(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/
+
 
     //Check if its a fully qualified link. Throw error otherwise
     let string = String(clean);
-    if (!string.includes("http:") && !string.includes("https:")) {
+    if (!regexURL.test(string)) {
+      // /string.includes("http:") && !string.includes("https:")
       // setValid(false);
-      setNewLink("Your link does not contain 'http://' or 'https://' !");
+      setNewLink("Your link does not contain 'http://' or 'https://' ! OR is not valid");
     } else {
       // setValid(true);
       valid = true;
