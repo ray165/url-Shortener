@@ -28,7 +28,7 @@ export default function App() {
     e.preventDefault();
     let clean = DOMPurify.sanitize(link.current.value);
     let valid = false;
-    let regexURL =  /(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/
+    let regexURL =  /(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-/]))?/
 
 
     //Check if its a fully qualified link. Throw error otherwise
