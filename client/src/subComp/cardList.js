@@ -41,7 +41,7 @@ export default function CardList(props) {
         <Typography variant="h5" color="primary" align="center">Previous Links:</Typography>
         {props.data.map((obj) => (
           <ListItem key={obj.id}>
-            <ListItemText primary={obj.originalLink} secondary={obj.newLink} />
+            <ListItemText primary={<div className="textOverflow">{obj.originalLink}</div>} secondary={obj.newLink} />
             <ListItemSecondaryAction onClick={() => copyClick(obj.newLink)}>
               <IconButton edge="end" aria-label="copy">
                 <FileCopyIcon />

@@ -5,3 +5,14 @@
     max-width: 60vh;
     margin: 0 auto;
 }
+
+.listItem {
+  word-wrap: break-word;
+}
+
+.textOverflow {
+  max-width: 300px; /* Adjust as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

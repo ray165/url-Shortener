@@ -34,11 +34,8 @@ export default function App() {
     //Check if its a fully qualified link. Throw error otherwise
     let string = String(clean);
     if (!regexURL.test(string)) {
-      // /string.includes("http:") && !string.includes("https:")
-      // setValid(false);
       setNewLink("Your link does not contain 'http://' or 'https://' ! OR is not valid");
     } else {
-      // setValid(true);
       valid = true;
     }
 
@@ -49,7 +46,7 @@ export default function App() {
       };
       // console.log(dataToSend);
 
-      fetch(`https://url-smallify.herokuapp.com/new-url`, {
+      fetch(`https://url-shortener-4grx.onrender.com/new-url`, {
         method: "POST",
         body: JSON.stringify(dataToSend), // stringify is needed to send!!!
         headers: {
@@ -58,11 +55,9 @@ export default function App() {
       })
         .then((data) => data.json())
         .then((res) => {
-          // console.log(res);
           if (res.status === "error") {
             throw new Error("Unable to generate a new link");
           } else if (res.status === "success") {
-            // console.log(res.code, "code returned...");
             setNewLink(String(window.location.origin + "/u/" + res.code));
             let newData = {
               originalLink: res.json.originalURL,
@@ -104,7 +99,7 @@ export default function App() {
             variant="h6"
             fontWeight="fontWeightBold"
           >
-            Please wait for Heroku to start... app may buffer on first use!
+            Please wait for Render to start... app may buffer on first use!
           </Typography>
           <Typography
             className="textStyle"
@@ -142,7 +137,7 @@ function Child() {
 
   // useLayoutEffect render content first, but before painting it onto the screen, it'll execute the functions. Prevents flicker.
   useLayoutEffect(() => {
-    fetch(`https://url-smallify.herokuapp.com/findCode/${code}`)
+    fetch(`https://url-shortener-4grx.onrender.com/findCode/${code}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.status === "success") {
