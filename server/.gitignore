@@ -26,3 +26,4 @@ yarn-error.log*
 # Mongodb certificate
 /cert.pem
 cert.pem
+X509-cert-3331717337969104445.pem
