@@ -23,7 +23,6 @@ export default function App() {
   const [newLink, setNewLink] = useState("");
   const [log, setLog] = useState([]);
 
-  // AJAX request to server side on button click.
   const send = (e) => {
     e.preventDefault();
     let clean = DOMPurify.sanitize(link.current.value);
@@ -39,18 +38,16 @@ export default function App() {
       valid = true;
     }
 
-    // console.log("Is it valid?", valid);
     if (valid) {
       let dataToSend = {
         url: clean,
       };
-      // console.log(dataToSend);
 
       fetch(`https://url-shortener-4grx.onrender.com/new-url`, {
         method: "POST",
-        body: JSON.stringify(dataToSend), // stringify is needed to send!!!
+        body: JSON.stringify(dataToSend), 
         headers: {
-          "Content-Type": "application/json", // content type is needed as well!!!
+          "Content-Type": "application/json", 
         },
       })
         .then((data) => data.json())
@@ -141,8 +138,8 @@ function Child() {
       .then((res) => res.json())
       .then((res) => {
         if (res.status === "success") {
-          setStatus(res.status);
           window.location.replace(res.content.originalURL);
+          setStatus(res.status);
         }
       })
       .catch((err) => {

@@ -30,7 +30,6 @@ export default function CardList(props) {
   };
 
   const copyClick = (e) => {
-    // console.log("File copy is clicked", e);
     navigator.clipboard.writeText(String(e));
     setOpen(true);
   };

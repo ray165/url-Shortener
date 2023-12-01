@@ -11,9 +11,10 @@ const bodyParser = require("body-parser");
 const credentials = process.env.credentials; //fs.readFileSync("./cert.pem") 
 const url =
   "mongodb+srv://cluster0.obfdv.mongodb.net/projectsDB?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority";
-// IMPORT SCHEMAS
 const myModels = require("./models/schema.js");
 const path = require("path");
+
+const MONGODB_DUPLICATE_ERROR = 11000;
 
 /**
  * Rate Limiter for spam prevention... for all API routes
@@ -30,9 +31,8 @@ mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
 
-// bodyParser.urlencoded is deprecated as its included in express
-// Instead uses 'express.urlencoded and .json'
-app.use(cors()); // Hopefully to fix post requests coming from netlify to heroku
+
+app.use(cors({ origin: '*' })); 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -42,21 +42,6 @@ app.use(express.json());
  */
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window)
-
-// mongoose.connect comes first
-// async function connectToDB() {
-//   try {
-//     await mongoose.connect(url, {
-//       sslKey: credentials,
-//       sslCert: credentials,
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
-// connectToDB();
 
 mongoose.connect(url, {
   sslKey: credentials,
@@ -68,7 +53,6 @@ mongoose.connect(url, {
 .catch(err => console.error(err));
 
 const db = mongoose.connection;
-// line code 22-25 retrieved from https://www.mongoosejs.com/docs/
 
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function () {
@@ -127,8 +111,6 @@ app.post("/new-url", async function (req, res) {
     myModels.URL.create(newData)
       .then((response) => {
         if (response.creationDate !== null) {
-          // create() returns a promsie with the mongodb data if successful. Success if creationDate is not null.
-          // console.log("res.ok line", response);
           return res.send({
             status: "success",
             msg: `post created ${newURL}`,
@@ -141,8 +123,7 @@ app.post("/new-url", async function (req, res) {
       })
       .catch((e) => {
         console.error("Error:", e, "error code", e.code);
-        if (e.code === 11000) {
-          // 11000 is duplicate URL code...
+        if (e.code === MONGODB_DUPLICATE_ERROR) {
           newData.codeURL = randChars();
           createDoc(); 
         } else {
@@ -156,24 +137,9 @@ app.post("/new-url", async function (req, res) {
 });
 
 app.get("/findCode/:code", function (req, res) {
-  // res.setHeader("Content-Type", "application/json");
   let cleanCode = DOMPurify.sanitize(req.params.code);
   console.log("Params: ", cleanCode);
   async function getData() {
-    // try {
-    //   let response = await db
-    //     .collection("URL")
-    //     .findOne({ codeURL: req.params.code })
-    //     .catch( (error) =>
-    //       res.send({status: "error", msg: error})
-    //     );
-    //   console.log("Returned document: " + response);
-    //   res.send(response); // send response here should be a then.
-    // } catch (error) {
-    //   console.error(error);
-    //   res.send({ status: "error", msg: `unable to find on mongodb` });
-    // }
-
     let response = await db
       .collection("urls")
       .findOne({ codeURL: cleanCode })
@@ -184,18 +150,15 @@ app.get("/findCode/:code", function (req, res) {
             status: "success",
             content: data,
           })
-          // res.redirect(String(data.originalURL)) // this is being executed on the original URL! need to fix..
         } else {
           throw new Error(data)
         }
-      }) // literally null since it doesnt exist yet. Check for if null then redirect to 404
+      }) 
       .catch((error) => {
         console.error(error)
-        // sebd a response that it didn't work. redirect to 404
         res.status(404).send({status: error})
       });
     console.log("Returned document: " + response);
-    // res.send(response); // send response here should be a then.
   }
 
   try {
